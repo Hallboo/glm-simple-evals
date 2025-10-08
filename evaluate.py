@@ -171,6 +171,7 @@ if __name__ == "__main__":
             api_key=args.zai_api_key,
             max_tokens=args.max_new_tokens,
             stream=args.stream,
+            temperature=args.temperature,
         )
     elif args.backbone == "openai":
         sampler = OpenAISampler(
@@ -179,6 +180,7 @@ if __name__ == "__main__":
             model=args.model_name,
             max_tokens=args.max_new_tokens,
             stream=args.stream,
+            temperature=args.temperature,
         )
     else:
         raise ValueError(f"Unknown backbone {args.backbone}")

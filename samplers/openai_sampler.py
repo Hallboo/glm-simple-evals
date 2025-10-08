@@ -93,7 +93,7 @@ class OpenAISampler(SamplerBase):
 
         return content
 
-    def __call__(self, message_list: MessageList, top_p=0.95, temperature=0.6) -> str:
+    def __call__(self, message_list: MessageList, top_p=0.95, temperature=-1) -> str:
         if self.system_message:
             message_list = [
                 {"role": "system", "content": self.system_message}
