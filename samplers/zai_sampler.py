@@ -19,6 +19,7 @@ class ZaiSampler(SamplerBase):
         temperature: float = 0.0,
         max_tokens: int = 4096,
         stream: bool = False,
+        top_p: float = 1.0,
     ):
         self.system_message = system_message
         self.temperature = temperature
@@ -26,8 +27,11 @@ class ZaiSampler(SamplerBase):
         self.model = model
         self.client = ZhipuAiClient(api_key=api_key)
         self.stream = stream
+        self.top_p = top_p
 
-    def get_resp(self, message_list):
+    def get_resp(self, message_list, top_p=-1, temperature=-1):
+        temperature = temperature if temperature > 0 else self.temperature
+        top_p = top_p if top_p > 0 else self.top_p
         for _ in range(3):
             try:
                 chat_completion = self.client.chat.completions.create(
@@ -48,7 +52,7 @@ class ZaiSampler(SamplerBase):
 
     def get_resp_stream(self, message_list, top_p=-1, temperature=-1):
         temperature = temperature if temperature > 0 else self.temperature
-        top_p = top_p if top_p > 0 else 0.95
+        top_p = top_p if top_p > 0 else self.top_p
         final = ""
         reasoning = ""
         for _ in range(200):
@@ -62,6 +66,7 @@ class ZaiSampler(SamplerBase):
                     stream=True,
                     max_tokens=self.max_tokens,
                     temperature=temperature,
+                    top_p=top_p,
                 )
                 for chunk in chat_completion_res:
                     if chunk.choices[0].delta.reasoning_content:
@@ -88,7 +93,7 @@ class ZaiSampler(SamplerBase):
 
         return content
 
-    def __call__(self, message_list: MessageList, top_p=0.95, temperature=-1) -> str:
+    def __call__(self, message_list: MessageList, top_p=-1, temperature=-1) -> str:
         if self.system_message:
             message_list = [
                 {"role": "system", "content": self.system_message}

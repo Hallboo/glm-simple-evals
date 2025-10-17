@@ -1,10 +1,10 @@
-# GLM-SIMPLE-EVALS
+# GLM-Simple-Evals
 
-GLM-SIMPLE-EVALS 是智谱AI内部使用的大模型评测工具集，基于 OpenAI 的 [simple-evals](https://github.com/openai/simple-evals) 项目开发。我们将其开源，以便社区能够复现智谱AI官方发布的 GLM-4.5 模型在各项评测指标上的表现。
+GLM-Simple-Evals 是智谱 AI 内部使用的大语言模型评测工具集，基于 OpenAI 的 [simple-evals](https://github.com/openai/simple-evals) 项目开发。我们将此工具开源，以帮助开发者社区复现智谱 AI 发布的 GLM-4.5 和 GLM-4.6 模型在各评测任务中的表现。
 
-## 支持的评测任务
+## 评测任务支持
 
-目前，本仓库支持以下评测任务，涵盖推理、代码、数学等多个领域：
+当前支持以下评测任务，覆盖推理、代码、数学等多个领域：
 
 - AIME
 - GPQA
@@ -14,31 +14,36 @@ GLM-SIMPLE-EVALS 是智谱AI内部使用的大模型评测工具集，基于 Ope
 - SciCode
 - MMLU Pro
 
-## 支持的模型调用方式
+## 模型接入方式
 
-本仓库支持两种模型调用方式：
+本项目支持以下两种模型调用方式：
 - 智谱官方 `zai-sdk`
 - 兼容 OpenAI 接口的模型调用
 
 ## 快速开始
 
-我们提供了 `eval_example.sh` 示例脚本，您只需配置其中的 `api_key` 和其他必要参数（如模型地址、校验模型地址等），并下载完所需数据即可开始评测。
+我们提供了 `eval_example.sh` 示例脚本，您只需配置其中的 API 密钥和其他必要参数（如模型地址、校验模型地址等），并下载所需数据即可开始评测。
 
-### 环境配置
+具体评测指南请参考以下文档：
 
-我们建议使用`python==3.10`环境。并运行如下命令配置该仓库所必需的环境依赖。
+- **[GLM-4.6](./news/glm-4.6/GLM4.6_zh.md)**
+- **[GLM-4.5 & GLM-4.5-Air](./news/glm-4.5/GLM4.5_zh.md)**
+
+### 环境要求
+
+推荐使用 Python 3.10 环境。运行以下命令安装所需依赖：
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 评测数据下载指南
+### 数据准备
 
 1. 下载 [glm-simple-evals-dataset](https://huggingface.co/datasets/zai-org/glm-simple-evals-dataset)，并将其放置在 `./data` 目录下。
 
 2. 下载 SciCode 所需测试用例，该数据集来源于 [SciCode 官方仓库](https://github.com/scicode-bench/SciCode/tree/main)。请从 [Google Drive 链接](https://drive.google.com/drive/folders/1W5GZW6_bdiDAiipuFMqdUhvUaHIj6-pR?usp=drive_link) 下载测试数据，并将其放置在 `./data/scicode/test_data.h5`。**注意**：在使用该数据集时，请遵守其原始仓库中规定的许可证条款和使用条件。
 
-### 评测任务使用指南
+### 使用指南
 
 #### 1. HLE
 
@@ -46,14 +51,14 @@ pip install -r requirements.txt
 
 ```bash
 python3 evaluate.py \
-    --model_name "glm-4.5" \
+    --model_name "glm-4.6" \
     --backbone "zai" \
     --zai_api_key "xxxxxx" \
     --save_dir "/temp/eval_results" \
     --tasks hle \
     --proc_num 60 \
     --auto_extract_answer \
-    --max_new_tokens 81920 \
+    --max_new_tokens 128000 \
     --checker_model_name "gpt-4o" \
     --checker_url "xxxx" \ # 如果为空，则指向OpenAI官方接口
     --checker_api_key "xxxx" \
@@ -66,7 +71,7 @@ python3 evaluate.py \
 
 ```bash
 python3 evaluate.py \
-    --model_name "glm-4.5" \
+    --model_name "glm-4.6" \
     --backbone "zai" \
     --zai_api_key "xxxxxx" \
     --save_dir "/temp/eval_results" \
@@ -74,8 +79,9 @@ python3 evaluate.py \
     --lcb_date "2407_2501" \
     --proc_num 60 \
     --auto_extract_answer \
-    --max_new_tokens 81920 \
+    --max_new_tokens 128000 \
     --stream \
+    --top_p 0.95 \
 ```
 
 #### 3. 其他评测任务
@@ -84,7 +90,7 @@ python3 evaluate.py \
 
 ```bash
 python3 evaluate.py \
-    --model_name "glm-4.5" \
+    --model_name "glm-4.6" \
     --backbone "zai" \
     --zai_api_key "xxxxxx" \
     --save_dir "/temp/eval_results" \
@@ -93,7 +99,7 @@ python3 evaluate.py \
     --checker_model_name "Meta-Llama-3.1-70B-Instruct" \
     --checker_url "xxxxx" \
     --auto_extract_answer \
-    --max_new_tokens 81920 \
+    --max_new_tokens 128000 \
     --stream \
 ```
 
@@ -102,8 +108,10 @@ python3 evaluate.py \
 以下是评测脚本中常用参数的说明：
 
 - `--model_name`: 待评测的模型名称
-- `--backbone`: 模型调用方式，支持 "zai"（智谱官方SDK）或其他兼容OpenAI接口的方式
+- `--backbone`: 模型调用方式，"zai"（智谱官方SDK）或 "openai"(其他兼容OpenAI接口的方式)
 - `--zai_api_key`: 智谱BigModel平台的API Key
+- `--openai_api_key`: 其他兼容OpenAI接口的供应商的API Key
+- `--openai_base_url`: 其他兼容OpenAI接口的供应商的Url
 - `--save_dir`: 评测结果保存目录
 - `--tasks`: 评测任务
 - `--proc_num`: 并发进程数
@@ -113,7 +121,7 @@ python3 evaluate.py \
 - `--checker_url`: 校验模型API地址
 - `--checker_api_key`: 校验模型API密钥
 - `--stream`: 是否使用流式输出
-- `--lcb_date`: LiveCodeBench评测的测试日期范围
+- `--lcb_date`: LiveCodeBench评测的测试日期范围，可选 '2407_2501' 或 'v6'
 
 ## 注意事项
 

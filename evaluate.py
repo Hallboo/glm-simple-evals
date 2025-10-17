@@ -109,6 +109,13 @@ if __name__ == "__main__":
         default=0.6,
         help="The temperature of the evaluation",
     )
+
+    parser.add_argument(
+        "--top_p", type=float, default=1.0, help="The top p of the evaluation"
+    )
+    parser.add_argument(
+        "--top_k", type=int, default=-1, help="The top k of the evaluation"
+    )
     parser.add_argument(
         "--worst_of_n",
         action="store_true",
@@ -172,6 +179,7 @@ if __name__ == "__main__":
             max_tokens=args.max_new_tokens,
             stream=args.stream,
             temperature=args.temperature,
+            top_p=args.top_p,
         )
     elif args.backbone == "openai":
         sampler = OpenAISampler(
@@ -181,6 +189,7 @@ if __name__ == "__main__":
             max_tokens=args.max_new_tokens,
             stream=args.stream,
             temperature=args.temperature,
+            top_p=args.top_p,
         )
     else:
         raise ValueError(f"Unknown backbone {args.backbone}")
