@@ -41,7 +41,6 @@ python3 evaluate.py \
     --auto_extract_answer \
     --max_new_tokens $MAX_NEW_TOKENS \
     --temperature $TEMPERATURE \
-    --top_p 0.95 \
     --stream
 
 # LiveCodeBench v6 Evaluation
@@ -56,7 +55,6 @@ python3 evaluate.py \
     --auto_extract_answer \
     --max_new_tokens $MAX_NEW_TOKENS \
     --temperature $TEMPERATURE \
-    --top_p 0.95 \
     --stream
 
 # AIME 2025 Evaluation
