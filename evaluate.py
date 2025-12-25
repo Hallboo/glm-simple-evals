@@ -169,6 +169,17 @@ if __name__ == "__main__":
             model=args.checker_model_name,
             max_tokens=4096,
         )
+    elif args.checker_model_name.startswith("glm"):
+        equality_checker = OpenAISampler(
+            api_key="default",
+            url=args.checker_url,
+            model=args.checker_model_name,
+            temperature=0.1,
+            max_tokens=8192,
+            extra_body={
+                "chat_template_kwargs": {"enable_thinking": False}
+            }
+        )
     else:
         raise ValueError(f"Unknown equality checker model {args.checker_model_name}")
 

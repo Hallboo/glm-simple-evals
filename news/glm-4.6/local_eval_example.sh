@@ -21,6 +21,7 @@ python3 evaluate.py \
     --backbone $BACKBONE \
     --openai_api_key $OPENAI_API_KEY \
     --openai_base_url $OPENAI_BASE_URL \
+    --save_dir "$SAVE_DIR" \
     --tasks hle \
     --proc_num $PROC_NUM \
     --auto_extract_answer \
@@ -29,7 +30,7 @@ python3 evaluate.py \
     --checker_url "" \
     --checker_api_key $CHECKER_API_KEY \
     --temperature $TEMPERATURE \
-    --stream \
+    --stream
 
 # LiveCodeBench Evaluation (2407-2501)
 python3 evaluate.py \
@@ -77,7 +78,7 @@ python3 evaluate.py \
     --checker_model_name $CHECKER_MODEL_NAME \
     --checker_url $CHECKER_URL \
     --temperature $TEMPERATURE \
-    --stream \
+    --stream
 
 # GPQA Evaluation
 python3 evaluate.py \
@@ -93,7 +94,7 @@ python3 evaluate.py \
     --checker_model_name $CHECKER_MODEL_NAME \
     --checker_url $CHECKER_URL \
     --temperature $TEMPERATURE \
-    --stream \
+    --stream
 
 # MATH 500 Evaluation
 python3 evaluate.py \
@@ -109,7 +110,7 @@ python3 evaluate.py \
     --checker_model_name $CHECKER_MODEL_NAME \
     --checker_url $CHECKER_URL \
     --temperature $TEMPERATURE \
-    --stream \
+    --stream
 
 # MMLU Pro Evaluation
 python3 evaluate.py \
@@ -125,7 +126,7 @@ python3 evaluate.py \
     --checker_model_name $CHECKER_MODEL_NAME \
     --checker_url $CHECKER_URL \
     --temperature $TEMPERATURE \
-    --stream \
+    --stream
 
 # SciCode Evaluation
 python3 evaluate.py \
@@ -141,4 +142,4 @@ python3 evaluate.py \
     --checker_model_name $CHECKER_MODEL_NAME \
     --checker_url $CHECKER_URL \
     --temperature $TEMPERATURE \
-    --stream \
+    --stream

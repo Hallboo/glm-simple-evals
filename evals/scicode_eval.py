@@ -254,7 +254,7 @@ class Gencode:
         )
 
 
-def test_code(scicode_data):
+def test_code(scicode_data, force_test_overwrite_log=False):
     log_dir = Path(scicode_tmp_dir, "log")
     scicode_data = [data for data in scicode_data]
     json_dct = {}
@@ -342,7 +342,7 @@ from scicode.parse.parse import process_hdf5_to_tuple
             logs_dir_ = Path(log_dir)
             logs_dir_.mkdir(parents=True, exist_ok=True)
             logs_file = Path(logs_dir_, f"{file_path.stem}.txt")
-            if logs_file.exists():
+            if not force_test_overwrite_log and logs_file.exists():
                 with open(logs_file, "r") as f:
                     content = f.read().splitlines()
                     if content[0] == "pass":
@@ -417,6 +417,8 @@ class SciCodeEval(Eval):
         global scicode_tmp_dir
         scicode_tmp_dir = Path(save_dir, "simple_evals", "scicode")
         self.with_background = with_background
+        if not os.path.exists(h5py_file):
+            raise FileNotFoundError(f"please download the test data from the Google Drive link and place it at {h5py_file} link: https://drive.google.com/drive/folders/1W5GZW6_bdiDAiipuFMqdUhvUaHIj6-pR")
 
     def prepare_dataset(self, data_dir):
         print(__file__, data_dir)
@@ -454,6 +456,7 @@ class SciCodeEval(Eval):
         num_thread = self.proc_num
         common.map_with_progress(fn, self.examples, num_threads=num_thread)
 
-        sub_score, main_score = test_code(self.examples)
+        print("Start run test_code:")
+        sub_score, main_score = test_code(self.examples, force_test_overwrite_log=True)
 
         return EvalResult(sub_score, {"main_score": main_score}), None

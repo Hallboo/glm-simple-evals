@@ -20,6 +20,8 @@ class OpenAISampler(SamplerBase):
         max_tokens: int = 4096,
         stream: bool = False,
         top_p: float = 1.0,
+        retry: int = 50,
+        extra_body: Optional[dict] = None,
     ):
         self.system_message = system_message
         self.temperature = temperature
@@ -32,22 +34,37 @@ class OpenAISampler(SamplerBase):
             self.client = OpenAI(api_key=api_key, base_url=url, timeout=360)
         self.stream = stream
         self.top_p = top_p
+        self.retry = retry
+        self.extra_body = extra_body or {}
 
     def get_resp(self, message_list, top_p=-1, temperature=-1):
         temperature = temperature if temperature > 0 else self.temperature
         top_p = top_p if top_p > 0 else self.top_p
 
-        for _ in range(3):
+        for i in range(self.retry):
             try:
+                extra_body = self.extra_body.copy()
                 chat_completion = self.client.chat.completions.create(
                     messages=message_list,
                     model=self.model,
                     temperature=self.temperature,
                     max_tokens=self.max_tokens,
                     top_p=top_p,
+                    extra_body=extra_body,
                 )
-                output = chat_completion.choices[0].message.content
-                return output
+                content = chat_completion.choices[0].message.content or None
+                if content is not None:
+                    return content
+
+                # content is None，继续重试
+                if i < self.retry - 1:
+                    print(f"content is None, retry ... index {i}")
+                    time.sleep(1)
+                    continue
+                else:
+                    # 最后一次重试也失败了，返回空字符串
+                    print(f"content is None after {self.retry} retries")
+                    return ""
             except Exception as e:
                 print(f"Exception: {e}\nTraceback: {traceback.format_exc()}")
                 time.sleep(1)
